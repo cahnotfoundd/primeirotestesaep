@@ -11,8 +11,14 @@ public class Enemy : MonoBehaviour
     [SerializeField] private int health = 3;
     [SerializeField] public int points = 100;
 
+    private Rigidbody2D rb;
     private Transform player;
     private bool isDead;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
 
     private void Start()
     {
@@ -24,24 +30,22 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (isDead)
             return;
 
         if (chasePlayer && player != null)
         {
-            transform.position = Vector2.MoveTowards(
-                transform.position,
+            rb.MovePosition(Vector2.MoveTowards(
+                rb.position,
                 player.position,
-                speed * Time.deltaTime
-            );
+                speed * Time.fixedDeltaTime
+            ));
         }
         else
         {
-            transform.Translate(
-                Vector2.down * speed * Time.deltaTime
-            );
+            rb.MovePosition(rb.position + Vector2.down * speed * Time.fixedDeltaTime);
         }
     }
 
@@ -68,6 +72,11 @@ public class Enemy : MonoBehaviour
         if (GameManager.Instance != null)
         {
             GameManager.Instance.AddScore(points);
+        }
+
+        if (EnemySpawner.Instance != null)
+        {
+            EnemySpawner.Instance.EnemyDefeated();
         }
 
         Destroy(gameObject);

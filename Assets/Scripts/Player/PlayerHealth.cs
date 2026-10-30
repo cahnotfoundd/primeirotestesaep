@@ -36,12 +36,17 @@ public class PlayerHealth : MonoBehaviour
         if (currentHealth <= 0)
         {
             Die();
+            
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.GameOver();
+            }
         }
     }
 
-    private void OnTriggerStay2D(Collider2D other)
+    private void OnCollisionStay2D(Collision2D collision)
     {
-        if (!other.CompareTag("Enemy"))
+        if (!collision.gameObject.CompareTag("Enemy"))
             return;
 
         if (isDead || Time.time < nextDamageTime)
